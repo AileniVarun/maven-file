@@ -2,38 +2,33 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'  // Make sure this matches your Maven installation in Jenkins
+        maven 'MAVEN_HOME'  // Your configured Maven tool name
     }
 
     stages {
-        stage('Clone Repository & Clean') {
+        stage('Clean Workspace') {
             steps {
-                // Remove old project folder (if exists)
-                bat 'rmdir /s /q mavenjava'
-
-                // Clone repo from GitHub
-                bat 'git clone https://github.com/ashokitschool/maven-web-app.git mavenjava'
-
-                // Clean Maven project
-                bat 'mvn clean -f mavenjava/pom.xml'
+                // Clean the workspace before build to avoid leftovers
+                deleteDir()
             }
         }
 
-        stage('Install') {
+        stage('Build with Maven') {
             steps {
-                bat 'mvn install -f mavenjava/pom.xml'
+                // Runs mvn clean install on the checked out repo
+                bat 'mvn clean install'
             }
         }
 
         stage('Test') {
             steps {
-                bat 'mvn test -f mavenjava/pom.xml'
+                bat 'mvn test'
             }
         }
 
         stage('Package') {
             steps {
-                bat 'mvn package -f mavenjava/pom.xml'
+                bat 'mvn package'
             }
         }
     }
