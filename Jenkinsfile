@@ -1,28 +1,36 @@
 pipeline {
     agent any
-    
-    tools{
-        maven 'Maven-3.9.9'
+
+    tools {
+        maven 'MAVEN_HOME'  // Make sure this matches your Jenkins Maven tool name
     }
+
+    environment {
+        IMAGE_NAME = 'ashokit/mavenwebapp'  // Docker image name
+    }
+
     stages {
-        stage('clone') {
+        stage('Clone Repository') {
             steps {
-              git 'https://github.com/ashokitschool/maven-web-app.git'
+                git 'https://github.com/ashokitschool/maven-web-app.git'
             }
         }
-        stage('build'){
-            steps{
-                 sh 'mvn clean package'
-            }
-        }
-        stage('docker image'){
+
+        stage('Build with Maven') {
             steps {
-                sh 'docker build -t ashokit/mavenwebapp .'
+                sh 'mvn clean package'
             }
         }
-        stage('k8s deploy'){
-            steps{
-               sh 'kubectl apply -f k8s-deploy.yml'
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t $IMAGE_NAME ."
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f k8s-deploy.yml'
             }
         }
     }
