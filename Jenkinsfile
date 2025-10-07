@@ -1,21 +1,23 @@
 pipeline {
     agent any
 
-    options {
-        // Clean the workspace before checkout
-        skipDefaultCheckout()  // skip automatic checkout
-        // clean before checkout
-        wipeWorkspace()
-    }
-
     tools {
         maven 'MAVEN_HOME'
     }
 
+    options {
+        skipDefaultCheckout() // We'll do manual checkout after cleaning
+    }
+
     stages {
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
         stage('Checkout') {
             steps {
-                // Manual checkout here after cleaning
                 checkout scm
             }
         }
