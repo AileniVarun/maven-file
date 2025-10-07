@@ -2,11 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'MAVEN_HOME'
-    }
-
-    options {
-        skipDefaultCheckout() // We'll do manual checkout after cleaning
+        maven 'MAVEN-HOME' 
     }
 
     stages {
@@ -16,27 +12,34 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                checkout scm
+                // Clone your repo into "mavenjava" folder
+                bat 'git clone https://github.com/AileniVarun/maven-file.git mavenjava'
             }
         }
 
-        stage('Build with Maven') {
+        stage('Clean Maven Project') {
             steps {
-                bat 'mvn clean install'
+                bat 'mvn clean -f mavenjava\\pom.xml'
+            }
+        }
+
+        stage('Install') {
+            steps {
+                bat 'mvn install -f mavenjava\\pom.xml'
             }
         }
 
         stage('Test') {
             steps {
-                bat 'mvn test'
+                bat 'mvn test -f mavenjava\\pom.xml'
             }
         }
 
         stage('Package') {
             steps {
-                bat 'mvn package'
+                bat 'mvn package -f mavenjava\\pom.xml'
             }
         }
     }
