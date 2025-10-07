@@ -1,21 +1,27 @@
 pipeline {
     agent any
 
+    options {
+        // Clean the workspace before checkout
+        skipDefaultCheckout()  // skip automatic checkout
+        // clean before checkout
+        wipeWorkspace()
+    }
+
     tools {
-        maven 'MAVEN_HOME'  // Your configured Maven tool name
+        maven 'MAVEN_HOME'
     }
 
     stages {
-        stage('Clean Workspace') {
+        stage('Checkout') {
             steps {
-                // Clean the workspace before build to avoid leftovers
-                deleteDir()
+                // Manual checkout here after cleaning
+                checkout scm
             }
         }
 
         stage('Build with Maven') {
             steps {
-                // Runs mvn clean install on the checked out repo
                 bat 'mvn clean install'
             }
         }
